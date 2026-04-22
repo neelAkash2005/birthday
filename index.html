@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en">  
+  <head>  
+    <meta charset="UTF-8" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+    <title>Birthday Surprise</title>  
+    <link rel="preconnect" href="https://fonts.googleapis.com" />  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />  
+    <link  
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700&display=swap"  
+      rel="stylesheet"  
+    />  
+    <link rel="stylesheet" href="style.css" />  
+  </head>  
+  <body>  
+    <div class="float-bg" aria-hidden="true">  
+      <span class="float bubble"></span>  
+      <span class="float heart"></span>  
+      <span class="float star"></span>  
+      <span class="float bubble delay"></span>  
+      <span class="float star delay-2"></span>  
+      <span class="float heart delay-3"></span>  
+    </div>  <button id="musicToggle" class="music-toggle" aria-label="Toggle background music">  
+  Play Music  
+</button>  
+
+<main class="app">  
+  <section class="card intro-card show" id="introScreen">  
+    <div class="intro-text">Hey, I have something for you… 💫</div>  
+    <div class="heart-wrap" aria-hidden="true">  
+      <div class="heart-shell">  
+        <div class="confetti-emitter"></div>  
+        <div class="confetti-particles" id="confettiParticles"></div>  
+        <div class="heart-panda">  
+          <div class="panda">  
+            <div class="panda-ear panda-ear-left"></div>  
+            <div class="panda-ear panda-ear-right"></div>  
+            <div class="panda-eye panda-eye-left"></div>  
+            <div class="panda-eye panda-eye-right"></div>  
+            <div class="panda-nose"></div>  
+            <div class="panda-hand panda-hand-left"></div>  
+            <div class="panda-hand panda-hand-right"></div>  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+    <div class="heart-shadow" aria-hidden="true"></div>  
+
+    <div class="intro-content">  
+
+      <div class="actions" id="actionArea">  
+        <button id="tellBtn" class="btn btn-primary">Tell me</button>  
+        <button id="laterBtn" class="btn btn-secondary">Maybe later</button>  
+      </div>  
+
+      <p id="laterHint" class="later-hint" role="status" aria-live="polite"></p>  
+    </div>  
+  </section>  
+
+  <section class="card surprise-card" id="surpriseScreen" aria-hidden="true">  
+    <h2>For Suparna</h2>  
+    <p id="typewriter" class="typewriter"></p>  
+    <button id="nextBtn" class="btn btn-primary">One more surprise</button>  
+  </section>  
+
+  <section class="card final-card" id="finalScreen" aria-hidden="true">  
+    <h2>Happy Birthday ❤️</h2>  
+    <p>  
+      Dear Suparna, may your year be full of beautiful memories, calm moments, and all the  
+      happiness your heart can hold.  
+    </p>  
+  </section>  
+</main>  
+
+<div class="bottom-section" aria-hidden="true"></div>  
+
+<div id="confettiLayer" aria-hidden="true"></div>  
+
+<script src="script.js"></script>
+
+  </body>  
+</html>
