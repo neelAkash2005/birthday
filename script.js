@@ -13,6 +13,7 @@ const birthdayMessage =
 "Happy Birthday, Suparna. You are truly special, and I hope your day is filled with laughter, beautiful surprises, and all the warmth you share with everyone around you.";
 
 let laterAttempts = 0;
+let hoverAttempts = 0;
 let audioCtx = null;
 let melodyTimer = null;
 let oscillator = null;
@@ -21,6 +22,7 @@ let harmonyOscillator = null;
 let harmonyGainNode = null;
 let musicOn = false;
 let boxConfettiOrigin = null;
+let celebrationTimer = null;
 
 function getEmitterOriginInParticlesLayer() {
 const emitter = document.querySelector(".confetti-emitter");
@@ -153,24 +155,74 @@ requestAnimationFrame(animate);
 }
 }
 
+function startCelebrationFall() {
+const layer = document.getElementById("confettiLayer");
+if (!layer || celebrationTimer) {
+return;
+}
+
+const colors = ["#ffd8e8", "#ffb5cf", "#ffe0b8", "#ffffff", "#ff92b8"];
+const shapes = ["fall-circle", "fall-square", "fall-star", "fall-heart"];
+
+const spawnParticle = () => {
+const bit = document.createElement("span");
+const size = 7 + Math.floor(Math.random() * 8);
+const shapeClass = shapes[Math.floor(Math.random() * shapes.length)];
+const color = colors[Math.floor(Math.random() * colors.length)];
+const startX = Math.floor(Math.random() * window.innerWidth);
+const driftX = -36 + Math.floor(Math.random() * 72);
+const duration = 5200 + Math.floor(Math.random() * 3400);
+const endRotation = 320 + Math.floor(Math.random() * 500);
+
+bit.className = `celebration-fall ${shapeClass}`;
+bit.style.width = `${size}px`;
+bit.style.height = `${size}px`;
+bit.style.background = color;
+bit.style.left = `${startX}px`;
+bit.style.setProperty("--start-x", "0px");
+bit.style.setProperty("--drift-x", `${driftX}px`);
+bit.style.setProperty("--end-rotation", `${endRotation}deg`);
+bit.style.animationDuration = `${duration}ms`;
+
+layer.appendChild(bit);
+bit.addEventListener("animationend", () => bit.remove(), { once: true });
+};
+
+for (let i = 0; i < 12; i += 1) {
+setTimeout(spawnParticle, i * 110);
+}
+
+celebrationTimer = setInterval(spawnParticle, 220);
+}
+
 function moveLaterButton() {
-laterAttempts += 1;
 const areaRect = actionArea.getBoundingClientRect();
 const btnRect = laterBtn.getBoundingClientRect();
 const tellRect = tellBtn.getBoundingClientRect();
 
-if (!actionArea.style.minHeight) {
-actionArea.style.minHeight = "150px";
-}
-
 const padding = 8;
-const avoidGap = 12;
-const maxX = Math.max(0, areaRect.width - btnRect.width - padding * 2);
-const maxY = Math.max(0, areaRect.height - btnRect.height - padding * 2);
+const avoidGap = 20;
+const gap = 25;
 const tellX = tellRect.left - areaRect.left;
 const tellY = tellRect.top - areaRect.top;
 const tellW = tellRect.width;
 const tellH = tellRect.height;
+
+const centerX = tellX + tellW / 2;
+const centerY = tellY + tellH / 2;
+const orbitX = tellW / 2 + btnRect.width / 2 + gap;
+const orbitY = tellH / 2 + btnRect.height / 2 + gap;
+
+const candidateOffsets = [
+{ x: 0, y: -(orbitY + 10) },
+{ x: orbitX + 8, y: 0 },
+{ x: 0, y: orbitY + 10 },
+{ x: -(orbitX + 8), y: 0 },
+{ x: orbitX * 0.72, y: -(orbitY * 0.72) },
+{ x: orbitX * 0.72, y: orbitY * 0.72 },
+{ x: -(orbitX * 0.72), y: orbitY * 0.72 },
+{ x: -(orbitX * 0.72), y: -(orbitY * 0.72) }
+];
 
 const overlapsTell = (x, y) => {
 const overlapsX = x < tellX + tellW + avoidGap && x + btnRect.width > tellX - avoidGap;
@@ -178,42 +230,36 @@ const overlapsY = y < tellY + tellH + avoidGap && y + btnRect.height > tellY - a
 return overlapsX && overlapsY;
 };
 
-const candidates = [
-{ x: padding, y: padding },
-{ x: padding + maxX, y: padding },
-{ x: padding, y: padding + maxY },
-{ x: padding + maxX, y: padding + maxY },
-{
-  x: padding,
-  y: Math.min(padding + maxY, Math.max(padding, tellY + tellH + avoidGap))
-}
-];
-
-for (let i = 0; i < 24; i += 1) {
-  candidates.push({
-    x: padding + Math.floor(Math.random() * (maxX + 1)),
-    y: padding + Math.floor(Math.random() * (maxY + 1))
-  });
-}
-
 let x = padding;
 let y = padding;
-for (const candidate of candidates) {
-  if (!overlapsTell(candidate.x, candidate.y)) {
-    x = candidate.x;
-    y = candidate.y;
-    break;
-  }
+for (let i = 0; i < candidateOffsets.length; i += 1) {
+const candidateX = Math.round(centerX + candidateOffsets[i].x - btnRect.width / 2);
+const candidateY = Math.round(centerY + candidateOffsets[i].y - btnRect.height / 2);
+
+if (
+candidateX >= padding &&
+candidateY >= padding &&
+candidateX + btnRect.width <= areaRect.width - padding &&
+candidateY + btnRect.height <= areaRect.height - padding &&
+!overlapsTell(candidateX, candidateY)
+) {
+x = candidateX;
+y = candidateY;
+break;
+}
+}
+
+if (x === padding && y === padding) {
+const fallbackX = Math.max(padding, Math.min(areaRect.width - btnRect.width - padding, tellX + tellW + gap));
+const fallbackY = Math.max(padding, Math.min(areaRect.height - btnRect.height - padding, tellY + tellH + gap));
+x = overlapsTell(fallbackX, fallbackY) ? padding : fallbackX;
+y = overlapsTell(fallbackX, fallbackY) ? padding : fallbackY;
 }
 
 laterBtn.style.position = "absolute";
 laterBtn.style.transform = "none";
 laterBtn.style.left = `${x}px`;
 laterBtn.style.top = `${y}px`;
-
-if (laterAttempts >= 3) {
-laterHint.textContent = "Don't run away 😄 just click the other one!";
-}
 }
 
 function initMusic() {
@@ -344,22 +390,34 @@ stopMusic();
 }
 
 tellBtn.addEventListener("click", () => {
-launchConfetti(70);
-setTimeout(() => {
-showScreen(surpriseScreen);
-typeWriter(birthdayMessage);
-}, 420);
+  launchConfetti(70);
+  setTimeout(() => {
+    showScreen(surpriseScreen);
+    typeWriter(birthdayMessage);
+  }, 420);
 });
 
-laterBtn.addEventListener("mouseenter", moveLaterButton);
+// laterBtn moves on hover - message shows after 3-4 hovers
+laterBtn.addEventListener("mouseenter", () => {
+  hoverAttempts += 1;
+  moveLaterButton();
+  if (hoverAttempts >= 3) {
+    laterHint.textContent = "Don't run away 😄 just click the other one!";
+  }
+});
+
+// Prevent clicking - button moves away on any click attempt
 laterBtn.addEventListener("pointerdown", (event) => {
-event.preventDefault();
-moveLaterButton();
+  event.preventDefault();
+  event.stopPropagation();
+  moveLaterButton();
 });
 laterBtn.addEventListener("click", (event) => {
-event.preventDefault();
-moveLaterButton();
+  event.preventDefault();
+  event.stopPropagation();
+  moveLaterButton();
 });
+
 
 nextBtn.addEventListener("click", () => {
 showScreen(finalScreen);
@@ -369,3 +427,4 @@ window.addEventListener("resize", getEmitterOriginInParticlesLayer);
 getEmitterOriginInParticlesLayer();
 
 initMusic();
+startCelebrationFall();

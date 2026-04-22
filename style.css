@@ -25,6 +25,34 @@ clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%,
 .confetti-circle {
 border-radius: 50%;
 }
+
+.celebration-fall {
+position: absolute;
+top: -24px;
+left: 0;
+opacity: 0.9;
+pointer-events: none;
+will-change: transform, opacity;
+animation-name: celebration-fall;
+animation-timing-function: linear;
+animation-fill-mode: forwards;
+}
+
+.fall-circle {
+border-radius: 50%;
+}
+
+.fall-square {
+border-radius: 3px;
+}
+
+.fall-star {
+clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 92%, 50% 70%, 21% 92%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.fall-heart {
+clip-path: polygon(50% 92%, 18% 60%, 8% 40%, 10% 23%, 22% 12%, 36% 12%, 50% 26%, 64% 12%, 78% 12%, 90% 23%, 92% 40%, 82% 60%);
+}
 :root {
 --lavender: #eef0ff;
 --peach: #ffe9d8;
@@ -572,6 +600,20 @@ opacity: 0.4;
 }
 100% {
 transform: translateY(-110vh) rotate(80deg);
+opacity: 0;
+}
+}
+
+@keyframes celebration-fall {
+0% {
+transform: translate3d(var(--start-x, 0), -16px, 0) rotate(0deg);
+opacity: 0;
+}
+10% {
+opacity: 0.95;
+}
+100% {
+transform: translate3d(var(--drift-x, 0), 108vh, 0) rotate(var(--end-rotation, 520deg));
 opacity: 0;
 }
 }
